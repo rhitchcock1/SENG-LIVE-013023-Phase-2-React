@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
 
-  <title>P2L2 - React State and Events slides</title>
+  <title>P2L3 - React Information Flow</title>
 
   <meta name="description" content="A framework for easily creating beautiful presentations using HTML">
   <meta name="author" content="Hakim El Hattab">
@@ -73,7 +73,9 @@
     
         <section >
             
-            <h1>State &amp; Events</h1>
+            <h2>React Information Flow</h2>
+<img src="https://res.cloudinary.com/dlzuobe8h/image/upload/v1663777860/phase2/logo_rato6n.png">
+<p><a href="https://labs.tadigital.com/index.php/2020/03/31/unidirectional-data-flow-in-react/">https://labs.tadigital.com/index.php/2020/03/31/unidirectional-data-flow-in-react/</a></p>
 
             </section>
     
@@ -83,12 +85,13 @@
     
         <section >
             
-            <h2><strong> ✅ Objectives </strong></h2>
+            <h3>✅ Objectives</h3>
 <ul>
-<li>Explain the importance of state</li>
-<li>Explain the difference between state and props</li>
-<li>Observe how to use the useState hook</li>
-<li>Observe how to use DOM events in React</li>
+<li>Define the term “lifting state”</li>
+<li>Recognize the pattern for changing state in a parent component from a child component</li>
+<li>Explain the role that callback functions play in changing parent state</li>
+<li>Observe how we can render reusable components that invoke different callback functions after an event</li>
+<li>Recognize destructured props and how to work with them</li>
 </ul>
 
             </section>
@@ -99,13 +102,10 @@
     
         <section >
             
-            <h3 style="text-align: center;"><strong>Why is state important?</strong></h3>
-<div style="font-size: 0.7em">
-🏹 State is used to track information that changes over time. 
-<p>🏹 Props are passed from the parent component, state is internal to a component.</p>
-<p>🏹 Values stored in state are meant to change, especially in response to user behaviors (as the user interacts with the DOM and triggers events).</p>
-<p>🏹 We can do conditional rendering based on state values. This is a key component of declarative programming in React: we tie our components to our state by integrating state values into our JSX rendering logic. This way, changes in state eventually cause changes to the DOM (Updating the Dark Mode button!).</p>
-</div>
+            <h3>Lifting State Up ⬆️</h3>
+<p>“In React, sharing state is accomplished by moving it up to the closest common ancestor of the components that need it. This is called <strong>“lifting state up”.</strong>”</p>
+<p><a href="https://reactjs.org/docs/lifting-state-up.html">https://reactjs.org/docs/lifting-state-up.html</a></p>
+
             </section>
     
 
@@ -114,11 +114,15 @@
     
         <section >
             
-            <h5>React Flow</h5>
-<img height="360px" alt="Data Display Behavior" src="./data-display-behavior.drawio.svg" />
+            <h4>🤔 Decisions - Where should state be?</h4>
 <div style="font-size: 0.8em">
-🔑 We use state to store data that may change in response to user behavior
-<p>🏹 To work with state in a functional component, we use the <code>useState</code> hook</p>
+<p>From <a href="https://reactwithhooks.netlify.app/docs/thinking-in-react.html#step-4-identify-where-your-state-should-live">Step 4 of Thinking in React</a>: To decide where state should live, for each piece of state in your application:</p>
+<ul>
+<li>Identify every component that renders something based on that state.</li>
+<li class="fragment">Find a <strong>common owner component</strong> (a single component above all the components that need the state in the hierarchy).</li>
+<li class="fragment">Either the common owner or another component higher up in the hierarchy should own the state.</li>
+<li class="fragment">If you can’t find a component where it makes sense to own the state, create a new component solely for holding the state and add it somewhere in the hierarchy above the common owner component.</li>
+</ul>
 </div>
             </section>
     
@@ -128,13 +132,65 @@
     
         <section >
             
-            <h6>Local Variables vs State Variables</h6>
-<iframe src="https://codesandbox.io/embed/counter-state-example-0r8stb?fontsize=14&hidenavigation=1&theme=dark"
-  style="width:100%; height:600px; border:0; border-radius: 4px; overflow:hidden;"
-  title="counter-state-example"
+            <h3>Current Data Flow</h3>
+<div style="display: flex;">
+<div style="width: 60%">
+<center><img src="./component-hierarchy-with-data-flow.drawio.svg" alt="Component Hierarchy" style="height: 70vh" width="1500"></center>
+</div>
+<div style="width: 40%; font-size: 0.6em; text-align: left; display: flex; flex-direction: column; justify-content: center;">
+<p>💡 Question 1: Do you see a problem with storing <code>isDarkMode</code> in state within the <code>Header</code> component?</p>
+<p class="fragment">💡 Question 2: How about storing <code>projects</code> in state within the <code>ProjectList</code> component?</p>
+<p class="fragment">💡 Question 3: How about storing <code>searchQuery</code> in state within the <code>ProjectList</code> component?</p>
+</div>
+</div>
+            </section>
+    
+
+
+
+    
+        <section >
+            
+            <h3>Updated Data Flow</h3>
+<center><img src="./component-hierarchy-with-updated-data-flow.drawio.svg" alt="Component Hierarchy" style="height: 70vh" width="1500"></center>
+            </section>
+    
+
+
+
+    
+        <section >
+            
+            <h4>First Task: Lifting the darkMode state up 🔧</h4>
+<div style="font-size: 0.8em">
+<ul>
+<li>
+<p>Currently, we have our isDarkMode state within the Header component.</p>
+</li>
+<li>
+<p>What’s the problem with that?</p>
+</li>
+<li class="fragment">
+<p>If we want to update the style of the entire application as it changes, we will only cause a re-render to <code>Header</code> component and its children. We won’t be able to switch the entire app into dark mode</p>
+</li>
+</ul>
+</div>
+            </section>
+    
+
+
+
+    
+        <section >
+            
+            <iframe src="https://codesandbox.io/embed/inverse-data-flow-diagram-mtvrs6?fontsize=14&hidenavigation=1&theme=dark&view=preview"
+  style="width:100%; height:880px; border:0; border-radius: 4px; overflow:hidden;"
+  title="inverse-data-flow-diagram"
   allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
   sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
 ></iframe>
+<p><a href="https://mtvrs6.csb.app/" target="_blank" rel="noreferrer">🔖 Feel free to bookmark this!</a></p>
+
             </section>
     
 
@@ -143,39 +199,23 @@
     
         <section >
             
-            <h4>Handling events in React</h4>
-<p>Event handlers can only be attached to DOM elements, we can’t attach event listeners directly to our components</p>
-<div style="display: flex; flex-direction: row; font-size: 0.95em;">
-  <div style="width: 50%">
-<h4>Doesn’t work:</h4>
-<pre><code class="language-js">function Button() {
-  return (
-    &lt;button&gt;
-      Click Me
-    &lt;/button&gt;
-  );
-};
-
-&lt;Button onClick={() =&gt; console.log('clicked!')}&gt;
-  Click Me
-&lt;/Button&gt;
-</code></pre>
-  </div>
-  <div style="width: 50%">
-<h4>Does work</h4>
-<pre><code class="language-js">function Button({ onClick }) {
-  return (
-    &lt;button onClick={onClick}&gt;
-      Click Me
-    &lt;/button&gt;
-  );
-};
-
-&lt;Button onClick={() =&gt; console.log('clicked!')}&gt;
-  Click Me
-&lt;/Button&gt;
-</code></pre>
-  </div>
+            <h4>Let’s fix it! 😸</h4>
+<div style="font-size: 0.8em">
+<ol>
+<li>
+<p>Lift the <code>isDarkMode</code> state to the <code>App</code> component.</p>
+</li>
+<li class="fragment">
+<p>Create a function <code>onToggleDarkMode</code> that will handle updating the value of <code>isDarkMode</code> when necessary</p>
+</li>
+<li class="fragment">
+<p>Pass <code>isDarkMode</code> down as a prop to the <code>Header</code> component to use as the condition for what text the button will render</p>
+</li>
+<li class="fragment">
+<p>Pass <code>onToggleDarkMode</code> to be used as a callback function when the button is clicked</p>
+</li>
+</ol>
+<p class="fragment">❓ Why? This allows us to maintain the state and manage its value where the state is defined</p>
 </div>
             </section>
     
@@ -185,25 +225,60 @@
     
         <section >
             
-            <h4>Defining Event Handlers</h4>
-<p>We can also define event handler functions within our components and pass the function reference to our event listener in the JSX.</p>
-<pre><code class="language-js">function Counter() {
-  const [count, setCount] = useState(2);
-  const handleDecrement = (event) =&gt; {
-    if(count &gt; 0) {
-      setCount(count =&gt; count - 1);
-    }
+            <h4>Diagram</h4>
+<center><img src="https://res.cloudinary.com/dnocv6uwb/image/upload/v1645814361/react-inverse-data-flow-diagram_zpunjn.png" alt="Information flow diagram" style="height: 78vh"></center>
+            </section>
+    
+
+
+
+    
+        <section >
+            
+            <h4>Recap</h4>
+<p><small>First, move the <code>isDarkMode</code> to the <code>App</code> component:</small></p>
+<pre><code class="language-js">function App() {
+  const [isDarkMode, setIsDarkMode] = useState(true);
+
+...
+</code></pre>
+<p><small>Second, create the <code>onToggleDarkMode</code> function that will update the <code>isDarkMode</code> state:</small></p>
+<pre><code class="language-js">const onToggleDarkMode = () =&gt; setIsDarkMode(isDarkMode =&gt; !isDarkMode);
+</code></pre>
+<p><small>Third, pass both <code>isDarkMode</code> and <code>onToggleDarkMode</code> to <code>Header</code> as props</small></p>
+<pre><code class="language-jsx">&lt;Header isDarkMode={isDarkMode} onToggleDarkMode={onToggleDarkMode} /&gt;
+</code></pre>
+
+            </section>
+    
+
+
+
+    
+        <section >
+            
+            <h4>Inside the Header component:</h4>
+<p><small>Destructure the props in the argument and use the variables to render the button text and invoke the callback within your <code>onClick</code> event handler:</small></p>
+<pre><code class="language-js">function Header({ isDarkMode, onToggleDarkMode }) {
+  const handleToggleDarkMode = (e) =&gt; {
+    onToggleDarkMode();
   }
+  
+  const buttonText = isDarkMode ? &quot;Light Mode&quot; : &quot;Dark Mode&quot;
 
   return (
-    &lt;div&gt;
-      {count}
-      &lt;button onClick={handleDecrement}&gt;-&lt;/button&gt;
-    &lt;/div&gt;
+    &lt;header&gt;
+      &lt;h1&gt;
+        &lt;span className=&quot;logo&quot;&gt;{&quot;//&quot;}&lt;/span&gt;
+        Project Showcase
+      &lt;/h1&gt;
+      &lt;button onClick={handleToggleDarkMode}&gt;{buttonText}&lt;/button&gt;
+    &lt;/header&gt;
   );
 };
+
+export default Header;
 </code></pre>
-<p>This is helpful in the case where we need to introduce additional event handling logic. We can do so without cluttering our JSX.</p>
 
             </section>
     
@@ -213,33 +288,10 @@
     
         <section >
             
-            <h4>✅ Toggle Dark Mode Button</h4>
-<div style="font-size: 0.9em">
-<p>Inside the <code>Header</code> component, there is a button with textContent of <code>Light Mode</code></p>
-<pre><code class="language-js">&lt;button&gt;Light Mode&lt;/button&gt;
-</code></pre>
-<p>Attach an <code>onClick</code> event to the button:</p>
-<pre><code class="language-js">&lt;button onClick={() =&gt; console.log(&quot;clicked&quot;)}&gt;Light Mode&lt;/button&gt;
-</code></pre>
-<p>We can also also refactor using a helper function:</p>
-<pre><code class="language-js">const handleClick = () =&gt; console.log('clicked')
-
-&lt;button onClick={handeClick}&gt;Light Mode&lt;/button&gt;
-</code></pre>
-<p>💡 We need to now figure out how to properly set new text for the button and perform DOM manipulation to reflect the change. That is where <code>state</code> will come in.</p>
-</div>
-            </section>
-    
-
-
-
-    
-        <section >
-            
-            <h4>Passing State as Props</h4>
-<iframe src="https://codesandbox.io/embed/vigilant-minsky-iiykrb?fontsize=14&hidenavigation=1&theme=dark"
-  style="width:100%; height:600px; border:0; border-radius: 4px; overflow:hidden;"
-  title="vigilant-minsky-iiykrb"
+            <h3>What about projects?</h3>
+<iframe src="https://codesandbox.io/embed/inverse-data-flow-diagram-mtvrs6?fontsize=14&hidenavigation=1&theme=dark&view=preview"
+  style="width:100%; height:880px; border:0; border-radius: 4px; overflow:hidden;"
+  title="inverse-data-flow-diagram"
   allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
   sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
 ></iframe>
@@ -251,7 +303,18 @@
     
         <section >
             
-            <img src="./component-lifecycle.drawio.svg" alt="Component Lifecycle" width="1200" />
+            <h4>Lifting Projects in State</h4>
+<p><small>We need to modify <code>projects</code> from <code>ProjectForm</code> as well as access it from <code>ProjectList</code> so it needs to live in a common parent, in this case, we’ll move it to our new <code>ProjectsContainer</code> component:</small></p>
+<pre><code class="language-js">// this needs to move up
+const [projects, setProjects] = useState([]);
+// as does the function that updates this piece of state
+const loadProjects = () =&gt; {
+  fetch(&quot;http://localhost:4000/projects&quot;)
+    .then((res) =&gt; res.json())
+    .then((projects) =&gt; setProjects(projects));
+}
+</code></pre>
+
             </section>
     
 
@@ -260,7 +323,18 @@
     
         <section >
             
-            <img height="600px" alt="Data Display Behavior" src="./data-display-behavior.drawio.svg" />
+            <h4>Passing down the props</h4>
+<p><small>After lifting state up, we need to pass it down as props to the component where it lived before!</small></p>
+<pre><code class="language-js">// src/components/ProjectsContainer.js
+&lt;ProjectList projects={projects} onLoadProjects={onLoadProjects} /&gt;
+
+// src/components/ProjectList.js
+const ProjectList = ({ projects, onLoadProjects }) =&gt; { 
+</code></pre>
+<small>
+<p>Notice we’re renaming <code>loadProjects</code> to <code>onLoadProjects</code> to indicate that it is a callback function that will be associated with an event handler in a child component.</p>
+<p>Naming convention =&gt; <code>onBehaviorName</code></p>
+</small>
             </section>
     
 
@@ -269,103 +343,13 @@
     
         <section >
             
-            <h2>☕️ Break!!! ☕️</h2>
-
-            </section>
-    
-
-
-
-    
-        <section >
-            
-            <h4>Filter by project name in ProjectList component</h4>
-<div style="font-size: 0.9em">
-<p>Currently, we are creating a <code>ProjectCard</code> component for each project inside of the <code>projects</code> array:</p>
-<pre><code class="language-js">const renderedProjects = projects.map(project =&gt; {
-  return &lt;ProjectCard key={project.id} project={project} /&gt;
-})
-</code></pre>
-<p>We need to make this dynamic by implementing a filter feature that returns the projects based on the user’s entry in the <code>search input</code></p>
-<pre><code class="language-js">&lt;input type=&quot;text&quot; placeholder=&quot;Search...&quot; /&gt;
-</code></pre>
-</div>
-            </section>
-    
-
-
-
-    
-        <section >
-            
-            <h4>Filter by project name in ProjectList component steps:</h4>
-<div style="font-size: 0.9em">
-<ol>
-<li>Initialize state to track the <code>searchQuery</code>:</li>
-</ol>
-<pre><code class="language-js">const [searchQuery, setSearchQuery] = useState(&quot;&quot;);
-</code></pre>
-<ol start="2">
-<li>Add on <code>onChange</code> event to the input element:</li>
-</ol>
-<pre><code class="language-js">&lt;input onChange={handleSearch} type=&quot;text&quot; placeholder=&quot;Search...&quot; /&gt;
-</code></pre>
-<ol start="3">
-<li>Update the state in the <code>handleSearch</code> helper function:</li>
-</ol>
-<pre><code class="language-js">const handleSearch = (e) =&gt; setSearchQuery(e.target.value);
-</code></pre>
-</div>
-            </section>
-    
-
-
-
-    
-        <section >
-            
-            <h4>Filter by project name in ProjectList component steps contd:</h4>
-<div style="font-size: 0.9em">
-<ol start="4">
-<li>Filter the <code>projects</code> array to return the search results based on the <code>searchQuery</code> value:</li>
-</ol>
-<pre><code class="language-js">const searchResults = projects.filter((project) =&gt;
-  project.name.toLowerCase().includes(searchQuery.toLowerCase())
-);
-</code></pre>
-<ol start="5">
-<li>Map over <code>searchResults</code> instead of <code>projects</code> when creating <code>renderedProjects</code>:</li>
-</ol>
-<pre><code class="language-js">const renderedProjects = searchResults.map(project =&gt; {
-  return &lt;ProjectCard key={project.id} project={project} /&gt;
-})
-</code></pre>
-<p><strong>Note:</strong> If the searchQuery is an empty string, the <code>filter()</code> will return all the project items</p>
-</div>
-            </section>
-    
-
-
-
-    
-        <section >
-            
-            <h3>💡 Conclusion</h3>
-<div style="font-size: 0.9em">
-<p>Events and state are both important and can work together to allow the DOM to reflect a users interactions and activities by:</p>
-<ol>
-<li>
-<p>Attaching events to parts of our JSX</p>
-</li>
-<li>
-<p>Updating the state based on the goal of the event</p>
-</li>
-<li>
-<p>State change forces a re-render that will cause DOM manipulation and reflect the changes on the interface</p>
-</li>
-</ol>
-<h4 style="text-align: center;"><strong> user behavior -> update state -> React updates DOM </strong></h4>
-</div>
+            <h4>💡 Conclusion</h4>
+<iframe src="https://codesandbox.io/embed/inverse-data-flow-diagram-mtvrs6?fontsize=14&hidenavigation=1&theme=dark&view=preview"
+  style="width:100%; height:650px; border:0; border-radius: 4px; overflow:hidden;"
+  title="inverse-data-flow-diagram"
+  allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+  sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+></iframe>
             </section>
     
 
@@ -504,8 +488,8 @@
       parallaxBackgroundVertical: 0,
 
       //Presentation Size
-      width: 1400,
-			height: 700,
+      width: 1450,
+			height: 1000,
 			margin: 0.04,
       minScale: 0.2,
       maxScale: 2,
